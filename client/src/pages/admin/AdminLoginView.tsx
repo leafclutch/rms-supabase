@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { Lock, Mail, LayoutDashboard, ArrowLeft, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Lock, Mail, LayoutDashboard, Loader2, Sparkles, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const AdminLoginView: React.FC = () => {

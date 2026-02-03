@@ -107,16 +107,16 @@ const ViewOrderDetailsModal = ({ isOpen, order, onClose }: ViewOrderDetailsModal
 
     const handleCreateAccount = async () => {
         if (!newCustomerName || !newCustomerPhone) return toast.error('Name & Phone required');
-        
+
         // Strict Nepal Phone Validation: 10 digits, starts with 9
         const phoneRegex = /^9\d{9}$/;
         if (!phoneRegex.test(newCustomerPhone)) {
-             return toast.error('Invalid Phone Number. Must be 10 digits and start with 9.');
+            return toast.error('Invalid Phone Number. Must be 10 digits and start with 9.');
         }
 
         try {
             const response = await addCustomer(newCustomerName, newCustomerPhone);
-            setFoundCustomer(response.data || response); 
+            setFoundCustomer(response.data || response);
             setCustomerFound(true);
             setShowCreateForm(false);
             setSearchQuery(''); // clear search to avoid confusion or keep it?
@@ -598,7 +598,7 @@ const ViewOrderDetailsModal = ({ isOpen, order, onClose }: ViewOrderDetailsModal
                                             {searchQuery.length >= 2 && !customerFound && searchResults.length > 0 && (
                                                 <div className="absolute top-full left-0 right-0 z-10 bg-white border rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto">
                                                     {searchResults.map((customer: any) => (
-                                                        <div 
+                                                        <div
                                                             key={customer.id}
                                                             onClick={() => {
                                                                 setFoundCustomer(customer);
@@ -623,7 +623,7 @@ const ViewOrderDetailsModal = ({ isOpen, order, onClose }: ViewOrderDetailsModal
                                     {customerFound === true && foundCustomer && (
                                         <div className="flex items-center justify-between text-sm font-medium text-green-700 bg-green-50 p-2 rounded-lg border border-green-100">
                                             <div className="flex items-center gap-2">
-                                                <CheckCircle className="w-4 h-4" /> 
+                                                <CheckCircle className="w-4 h-4" />
                                                 <span>{foundCustomer.fullName || foundCustomer.name}</span>
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -664,30 +664,30 @@ const ViewOrderDetailsModal = ({ isOpen, order, onClose }: ViewOrderDetailsModal
                                                 <h4 className="text-xs font-bold text-gray-700">New Customer</h4>
                                                 <button onClick={() => setShowCreateForm(false)}><X className="w-3 h-3 text-gray-400" /></button>
                                             </div>
-                                            <input 
-                                                type="text" 
-                                                value={newCustomerName} 
-                                                onChange={(e) => setNewCustomerName(e.target.value)} 
-                                                placeholder="Full Name" 
-                                                className="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500" 
+                                            <input
+                                                type="text"
+                                                value={newCustomerName}
+                                                onChange={(e) => setNewCustomerName(e.target.value)}
+                                                placeholder="Full Name"
+                                                className="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
                                             />
                                             <div className="relative">
-                                                <input 
-                                                    type="tel" 
-                                                    value={newCustomerPhone} 
+                                                <input
+                                                    type="tel"
+                                                    value={newCustomerPhone}
                                                     onChange={(e) => {
                                                         const val = e.target.value.replace(/\D/g, '').slice(0, 10);
                                                         setNewCustomerPhone(val);
-                                                    }} 
-                                                    placeholder="Mobile Number (10 digits)" 
-                                                    className="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500" 
+                                                    }}
+                                                    placeholder="Mobile Number (10 digits)"
+                                                    className="w-full px-3 py-2 border rounded-lg text-sm outline-none focus:border-blue-500"
                                                 />
                                                 {newCustomerPhone.length === 10 && (
                                                     <CheckCircle className="absolute right-3 top-2.5 w-4 h-4 text-green-500" />
                                                 )}
                                             </div>
-                                            <button 
-                                                onClick={handleCreateAccount} 
+                                            <button
+                                                onClick={handleCreateAccount}
                                                 disabled={newCustomerPhone.length !== 10 || !newCustomerName}
                                                 className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >

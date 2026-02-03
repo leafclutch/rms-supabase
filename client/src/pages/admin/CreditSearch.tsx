@@ -23,7 +23,7 @@ export const CreditSearch: React.FC<CreditSearchProps> = ({ onSelectCustomer }) 
   return (
     <div className="space-y-4">
       <h3 className="font-bold text-gray-800">Search Customer for Credit</h3>
-      
+
       <SearchInput
         value={searchQuery}
         onChange={setSearchQuery}
@@ -37,9 +37,8 @@ export const CreditSearch: React.FC<CreditSearchProps> = ({ onSelectCustomer }) 
             <div
               key={customer.id}
               onClick={() => handleSelect(customer)}
-              className={`p-4 border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors ${
-                selectedCustomer?.id === customer.id ? 'bg-indigo-50 border-l-4 border-l-indigo-600' : ''
-              }`}
+              className={`p-4 border-b last:border-0 cursor-pointer hover:bg-gray-50 transition-colors ${selectedCustomer?.id === customer.id ? 'bg-indigo-50 border-l-4 border-l-indigo-600' : ''
+                }`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -68,7 +67,7 @@ export const CreditSearch: React.FC<CreditSearchProps> = ({ onSelectCustomer }) 
               </div>
 
               {/* Warning if near limit */}
-              {customer.totalCredit >= customer.creditLimit * 0.8 && (
+              {customer.creditLimit !== undefined && customer.totalCredit >= customer.creditLimit * 0.8 && (
                 <div className="mt-2 bg-yellow-50 border border-yellow-200 rounded-lg p-2 flex items-center gap-2 text-xs text-yellow-800">
                   <AlertCircle className="w-4 h-4" />
                   <span>Near credit limit</span>
@@ -104,7 +103,7 @@ export const CreditSearch: React.FC<CreditSearchProps> = ({ onSelectCustomer }) 
           <p className="text-lg font-bold text-gray-900">{selectedCustomer.name}</p>
           <div className="mt-2 space-y-1 text-sm">
             <p className="text-gray-600">Current Credit: <span className="font-bold text-red-600">Rs. {selectedCustomer.totalCredit}</span></p>
-            <p className="text-gray-600">Available: <span className="font-bold text-green-600">Rs. {selectedCustomer.creditLimit - selectedCustomer.totalCredit}</span></p>
+            <p className="text-gray-600">Available: <span className="font-bold text-green-600">Rs. {(selectedCustomer.creditLimit ?? 0) - selectedCustomer.totalCredit}</span></p>
           </div>
         </div>
       )}

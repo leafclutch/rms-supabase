@@ -13,15 +13,15 @@ const ExportPrintSingleOrder: React.FC<Props> = ({ order }) => {
     const headers = ["Order ID", "Table", "Customer", "Status", "Item", "Quantity", "Price", "Total"];
     const rows = order.items && order.items.length > 0
       ? order.items.map(item => [
-          order.id,
-          order.tableNumber,
-          order.customerName,
-          order.status,
-          item.name,
-          item.quantity,
-          item.price,
-          item.price * item.quantity
-        ])
+        order.id,
+        order.tableNumber,
+        order.customerName,
+        order.status,
+        item.name,
+        item.quantity,
+        item.menuItem.price,
+        item.menuItem.price * item.quantity
+      ])
       : [[order.id, order.tableNumber, order.customerName, order.status, "", "", "", order.totalAmount]];
 
     const csvContent = "data:text/csv;charset=utf-8," +
@@ -69,17 +69,17 @@ const ExportPrintSingleOrder: React.FC<Props> = ({ order }) => {
             </thead>
             <tbody>
               ${order.items && order.items.length > 0
-                ? order.items.map(item => `
+        ? order.items.map(item => `
                   <tr>
                     <td>${item.name}</td>
                     <td>${item.quantity}</td>
-                    <td>${item.price}</td>
-                    <td>${item.quantity * item.price}</td>
+                    <td>${item.menuItem.price}</td>
+                    <td>${item.quantity * item.menuItem.price}</td>
                   </tr>`).join("")
-                : `<tr>
+        : `<tr>
                      <td colspan="4">${order.totalAmount}</td>
                    </tr>`
-              }
+      }
             </tbody>
           </table>
 

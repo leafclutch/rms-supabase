@@ -26,7 +26,7 @@ export const useTableStore = create<TableState>((set) => ({
             const allTables = Object.values(groupedTables).flat() as Table[];
             set({ tables: allTables, isLoading: false });
         } catch (error) {
-            console.error('Failed to fetch tables:', error);
+            console.error(error);
             set({ error: 'Failed to fetch tables', isLoading: false });
         }
     },

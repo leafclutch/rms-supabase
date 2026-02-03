@@ -14,7 +14,6 @@ export const OrderSuccess: React.FC = () => {
     const navigate = useNavigate();
     const { orderId } = useParams<{ orderId: string }>();
     const { getOrderById } = useCustomerOrderStore();
-    console.log(orderId)
 
     // getOrderById may return undefined if orderId is missing or wrong
     const [order, setOrder] = useState<any>(() => (orderId ? getOrderById(orderId) : null));
@@ -25,7 +24,7 @@ export const OrderSuccess: React.FC = () => {
         }
     }, [orderId, getOrderById]);
 
-    const { cart, addToCart } = useCustomerCartStore();
+    const { addToCart } = useCustomerCartStore();
 
     const handleAddMoreItems = () => {
         // Add previous order items to cart
@@ -40,7 +39,8 @@ export const OrderSuccess: React.FC = () => {
                     category: item.category ?? 'Other',
                     isVeg: item.isVeg ?? true,
                     isAvailable: item.isAvailable ?? true,
-                    isSpecial: item.isSpecial ?? false, // Add missing property to satisfy MenuItem
+                    isSpecial: item.isSpecial ?? false,
+                    department: item.department ?? 'KITCHEN',
                 }, item.quantity);
             });
         }

@@ -50,7 +50,7 @@ const DepartmentDetailsModal: React.FC<DepartmentDetailsModalProps> = ({ isOpen,
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="overflow-y-auto flex-1 p-4">
           {items.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
@@ -78,8 +78,8 @@ const DepartmentDetailsModal: React.FC<DepartmentDetailsModalProps> = ({ isOpen,
         </div>
 
         <div className="p-4 bg-gray-50 border-t rounded-b-xl flex justify-between items-center">
-            <span className="font-medium text-gray-600">Total Department Revenue</span>
-            <span className="font-bold text-lg text-gray-900">Rs. {Math.round(totalRevenue).toLocaleString()}</span>
+          <span className="font-medium text-gray-600">Total Department Revenue</span>
+          <span className="font-bold text-lg text-gray-900">Rs. {Math.round(totalRevenue).toLocaleString()}</span>
         </div>
       </div>
     </div>
@@ -230,7 +230,7 @@ const ReportsView: React.FC = () => {
                   <Banknote className="w-5 h-5 text-green-500" />
                 </div>
                 <p className="text-2xl font-bold text-gray-900">Rs. {(byPaymentMethod.CASH?.amount || 0).toLocaleString()}</p>
-                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                   <div className="bg-green-500 h-1.5 rounded-full" style={{ width: `${salesSummary.netRevenue ? ((byPaymentMethod.CASH?.amount || 0) / salesSummary.netRevenue) * 100 : 0}%` }}></div>
                 </div>
               </Card>
@@ -273,10 +273,10 @@ const ReportsView: React.FC = () => {
                   const stats = deptStats[dept.id] || { revenue: 0, items: 0 };
 
                   return (
-                    <Card 
-                        key={dept.id} 
-                        className={`border-l-4 ${c.border} shadow-sm overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow`}
-                        onClick={() => setSelectedDept(dept.id)}
+                    <Card
+                      key={dept.id}
+                      className={`border-l-4 ${c.border} shadow-sm overflow-hidden relative cursor-pointer hover:shadow-md transition-shadow`}
+                      onClick={() => setSelectedDept(dept.id)}
                     >
                       <div className="flex items-center gap-3 mb-3 relative z-10">
                         <div className={`${c.bg} p-2 rounded-lg`}>
@@ -309,7 +309,7 @@ const ReportsView: React.FC = () => {
         )}
       </main>
 
-      <DepartmentDetailsModal 
+      <DepartmentDetailsModal
         isOpen={!!selectedDept}
         onClose={() => setSelectedDept(null)}
         departmentName={selectedDeptName}

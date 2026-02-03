@@ -44,10 +44,6 @@ export const serveOrderService = async (orderId: string) => {
         data: { status: 'served' }
     });
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:updated', { orderId, status: 'served' });
-    } catch (e) { console.error("Socket error", e); }
 
     return { message: 'Order marked as served', order };
 };
@@ -58,10 +54,6 @@ export const preparingOrderService = async (orderId: string) => {
         data: { status: 'preparing' }
     });
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:updated', { orderId, status: 'preparing' });
-    } catch (e) { console.error("Socket error", e); }
 
     return { message: 'Order is being prepared', order };
 };
@@ -98,7 +90,7 @@ const recalculateOrderTotal = async (orderId: string, tx?: any) => {
 };
 
 export const reduceOrderItemService = async (orderId: string, menuItemId: string, quantity: number) => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         const orderItem = await tx.orderItem.findFirst({
             where: { orderId, menuItemId }
         });
@@ -118,17 +110,13 @@ export const reduceOrderItemService = async (orderId: string, menuItemId: string
 
         const newTotal = await recalculateOrderTotal(orderId, tx);
 
-        try {
-            const { getIO } = await import('../socket.ts');
-            getIO().emit('order:updated', { orderId, totalAmount: newTotal });
-        } catch (e) { console.error("Socket error", e); }
 
         return { message: 'Item quantity reduced', newTotal };
     });
 };
 
 export const cancelOrderItemService = async (orderId: string, menuItemId: string) => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         const orderItem = await tx.orderItem.findFirst({
             where: { orderId, menuItemId }
         });
@@ -139,10 +127,6 @@ export const cancelOrderItemService = async (orderId: string, menuItemId: string
 
         const newTotal = await recalculateOrderTotal(orderId, tx);
 
-        try {
-            const { getIO } = await import('../socket.ts');
-            getIO().emit('order:updated', { orderId, totalAmount: newTotal });
-        } catch (e) { console.error("Socket error", e); }
 
         return { message: 'Item removed from order', newTotal };
     });
@@ -169,7 +153,7 @@ export const getOrderHistoryService = async () => {
 };
 
 export const addItemsToOrderService = async (orderId: string, items: { menuItemId: string, quantity: number }[]) => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         const order = await tx.order.findUnique({ where: { id: orderId } });
         if (!order) throw new AppError('Order not found', 404);
         if (order.status === 'paid' || order.status === 'cancelled') {
@@ -203,10 +187,6 @@ export const addItemsToOrderService = async (orderId: string, items: { menuItemI
 
         const newTotal = await recalculateOrderTotal(orderId, tx);
 
-        try {
-            const { getIO } = await import('../socket.ts');
-            getIO().emit('order:updated', { orderId, totalAmount: newTotal });
-        } catch (e) { console.error("Socket error", e); }
 
         return { message: 'Items added to order', newTotal };
     });

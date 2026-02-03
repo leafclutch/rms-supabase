@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     // Check authentication on mount
-    const isAuth = checkAuth();
+    checkAuth();
     setLoading(false);
   }, []);
 

@@ -74,7 +74,7 @@ export const useCustomerOrderStore = create<CustomerOrderStore>((set, get) => ({
       toast.success(response?.message || "Order placed successfully!");
       return newOrder;
     } catch (error: any) {
-      console.error("Create order failed:", error);
+
       const errorMessage = error?.response?.data?.message ||
         error?.message ||
         "Failed to create order";
@@ -82,7 +82,6 @@ export const useCustomerOrderStore = create<CustomerOrderStore>((set, get) => ({
       return null;
     }
   },
-
 
   getOrderById: (id: string) => {
     const { orders } = get();
@@ -109,7 +108,7 @@ export const useCustomerOrderStore = create<CustomerOrderStore>((set, get) => ({
 
       toast.success("Order status updated!");
     } catch (error: any) {
-      console.error("Update order status failed:", error);
+
       toast.error("Failed to update order");
     }
   },
@@ -121,7 +120,7 @@ export const useCustomerOrderStore = create<CustomerOrderStore>((set, get) => ({
       const data: CustomerOrder[] = await res.json();
       set({ orders: data });
     } catch (error: any) {
-      console.error("Fetch orders failed:", error);
+      console.error(error);
       toast.error("Failed to fetch orders");
     }
   },

@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import { createOrder, getOrders, preparingOrder, serveOrder, getOrderHistory } from '../api/orders';
 import api from '../api/axios';
-import { socket, connectSocket } from '../api/socket';
+import { supabase } from '../api/supabaseClient';
 import toast from 'react-hot-toast';
-import { Bell, CheckCircle, ClipboardCheck, XCircle } from 'lucide-react';
+import { Bell, ClipboardCheck, XCircle } from 'lucide-react';
 import type { Order, OrderStatus } from '../types/order';
 
 interface OrderStore {
@@ -30,7 +30,7 @@ interface OrderStore {
     getOrderById: (id: string) => Order | null;
     addOrder: (order: any) => Promise<void>;
     updateOrder: (orderId: string, updates: Partial<Order>) => void;
-    initializeSocket: () => () => void;
+    initializeRealtime: () => () => void;
     setIsHistoryMode: (isHistory: boolean) => void;
 }
 
@@ -128,63 +128,122 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
             set((state) => ({
                 orders: [mappedOrder, ...state.orders]
             }));
-            toast.success("Order placed successfully!", {
-                icon: <CheckCircle className="w-5 h-5 text-green-500" />
-            });
         } catch (error: any) {
             toast.error(error?.message || "Failed to place order.");
             throw error;
         }
     },
 
-    initializeSocket: () => {
+    initializeRealtime: () => {
         const { fetchOrders, fetchHistory } = get();
 
-        // Connect with token if available
-        const auth = localStorage.getItem("authUser");
-        if (auth) {
-            const { token } = JSON.parse(auth);
-            connectSocket(token);
-        }
+        const channel = supabase
+            .channel('orders-realtime')
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'orders' },
+                async (payload: any) => {
+                    if (!get().isHistoryMode) fetchOrders();
 
-        // Listen for new orders
-        socket.on('order:new', (data) => {
-            console.log('New order received via socket:', data);
-            if (!get().isHistoryMode) fetchOrders();
-            toast.success(`New order received for ${data.tableCode}!`, {
-                icon: <Bell className="w-5 h-5 text-orange-500" />,
-                duration: 5000
-            });
-        });
+                    const tableId = payload.new.tableId || payload.new.table_id || payload.new.tableid;
+                    if (!tableId) return;
 
-        // Listen for order updates
-        socket.on('order:updated', (data) => {
-            console.log('Order update received via socket:', data);
-            if (get().isHistoryMode) fetchHistory();
-            else fetchOrders();
+                    // We need to fetch table code for the notification since payload only has tableId
+                    const { data: tableData, error: tableError } = await supabase
+                        .from('tables')
+                        .select('tableCode')
+                        .eq('id', tableId)
+                        .maybeSingle();
 
-            // Notify about added items
-            if (data.addedItems && Array.isArray(data.addedItems)) {
-                data.addedItems.forEach((item: { name: string; quantity: number }) => {
-                    toast.success(`${item.name} is added on ${data.tableCode}`, {
+                    if (tableError) console.error('Error fetching table record:', tableError);
+
+                    toast.success(`New order received for ${tableData?.tableCode || 'Table'}!`, {
+                        icon: <Bell className="w-5 h-5 text-orange-500" />,
+                        duration: 5000
+                    });
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'orders' },
+                async (payload: any) => {
+
+                    const oldStatus = payload.old?.status;
+                    const newStatus = payload.new?.status;
+
+                    if (newStatus === 'paid' && oldStatus !== 'paid') {
+                        // Order paid event
+                        fetchOrders();
+                        fetchHistory();
+                        return;
+                    }
+
+                    if (get().isHistoryMode) fetchHistory();
+                    else fetchOrders();
+                }
+            )
+            .on(
+                'postgres_changes',
+                { event: 'INSERT', schema: 'public', table: 'order_items' },
+                async (payload: any) => {
+                    // Refresh orders to show the new item in the list/modal
+                    if (!get().isHistoryMode) fetchOrders();
+
+                    const menuItemId = payload.new.menuItemId || payload.new.menu_item_id || payload.new.menuitemid;
+                    const orderId = payload.new.orderId || payload.new.order_id || payload.new.orderid;
+
+                    if (!menuItemId || !orderId) return;
+
+                    // Fetch item and order details (including order createdAt to detect if it's a new order)
+                    const [itemRes, orderRes] = await Promise.all([
+                        supabase.from('menu_items').select('name').eq('id', menuItemId).maybeSingle(),
+                        supabase.from('orders').select('tableId, createdAt').eq('id', orderId).maybeSingle()
+                    ]);
+
+                    if (itemRes.error) console.error('Error fetching menu item:', itemRes.error);
+                    if (orderRes.error) console.error('Error fetching order:', orderRes.error);
+
+                    const itemData = itemRes.data;
+                    const orderData = orderRes.data;
+
+                    if (!orderData) return;
+
+                    // --- LOGIC: Prevent double notification for new orders --- 
+                    // If the item was created within 5 seconds of the order itself, 
+                    // we assume it's part of the initial "New Order" and skip this toast.
+                    const orderCreatedTime = new Date(orderData.createdAt).getTime();
+                    const itemCreatedTime = new Date(payload.new.createdAt || payload.new.created_at || Date.now()).getTime();
+
+                    if (Math.abs(itemCreatedTime - orderCreatedTime) < 5000) {
+                        return;
+                    }
+
+                    let tableCode = 'Table';
+                    const tableId = orderData.tableId;
+
+                    if (tableId) {
+                        const { data: tableData, error: tableFetchError } = await supabase
+                            .from('tables')
+                            .select('tableCode')
+                            .eq('id', tableId)
+                            .maybeSingle();
+
+                        if (tableFetchError) console.error('Error fetching table data:', tableFetchError);
+                        tableCode = tableData?.tableCode || 'Table';
+                    }
+
+                    toast.success(`${itemData?.name || 'Item'} is added on ${tableCode}`, {
                         icon: <Bell className="w-5 h-5 text-blue-500" />,
                         duration: 4000
                     });
-                });
-            }
-        });
-
-        // Listen for payments
-        socket.on('order:paid', (data) => {
-            console.log('Order payment received via socket:', data);
-            fetchOrders();
-            fetchHistory();
-        });
+                }
+            )
+            .subscribe((_status, err) => {
+                if (err) console.error('Supabase subscription error:', err);
+            });
 
         return () => {
-            socket.off('order:new');
-            socket.off('order:updated');
-            socket.off('order:paid');
+            supabase.removeChannel(channel);
         };
     },
 

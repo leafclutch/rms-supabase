@@ -22,15 +22,15 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const { 
-    cart, 
-    getTotalAmount, 
-    updateQuantity, 
-    removeFromCart, 
-    clearCart 
+  const {
+    cart,
+    getTotalAmount,
+    updateQuantity,
+    removeFromCart,
+    clearCart
   } = useCustomerCartStore();
-  
-  const { createOrder, updateExistingOrder } = useCustomerOrderStore();
+
+  const { createOrder } = useCustomerOrderStore();
 
   const cartTotal = getTotalAmount();
   const customerType = tableCode ? "DINE_IN" : "WALK_IN";
@@ -51,24 +51,15 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
     try {
       let order: CustomerOrder | null = null;
 
-      if (existingOrder) {
-        // Append to existing order
-        order = await updateExistingOrder(existingOrder.orderId, cart);
-        
-        if (order) {
-          toast.success('Items added to existing order!');
-        }
-      } else {
-        // Create new order
-        order = await createOrder({
-          items: cart,
-          tableCode: tableCode || undefined,
-          customerType,
-        });
+      // Create new order
+      order = await createOrder({
+        items: cart,
+        tableCode: tableCode || undefined,
+        customerType,
+      });
 
-        if (order) {
-          toast.success('Order placed successfully!');
-        }
+      if (order) {
+        toast.success('Order placed successfully!');
       }
 
       if (order) {
@@ -78,7 +69,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({
       }
     } catch (err: any) {
       console.error('Checkout failed:', err);
-      toast.error(err.message || 'Failed to place order. Please try again.');
+      toast.error(err?.message || 'Checkout failed');
     } finally {
       setLoading(false);
     }

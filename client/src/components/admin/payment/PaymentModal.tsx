@@ -22,12 +22,12 @@ type PaymentMethod = 'cash' | 'online' | 'credit' | 'mixed';
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSuccess }) => {
   const [activeTab, setActiveTab] = useState<PaymentMethod>('cash');
-  
+
   // Discount state
   const [discountType, setDiscountType] = useState<'fixed' | 'percentage'>('percentage');
   const [discountValue, setDiscountValue] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
-  
+
   // Payment amounts
   const [cashAmount, setCashAmount] = useState(order.totalAmount);
   const [onlineAmount, setOnlineAmount] = useState(0);
@@ -68,7 +68,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
         if (!selectedCustomer) {
           throw new Error('Please select a customer');
         }
-        
+
         // Add debt to customer account
         await addCreditTransaction(selectedCustomer.id, {
           customerId: selectedCustomer.id,
@@ -90,22 +90,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
       // Update order
       await updateOrder(order.id, {
         paymentMethod: activeTab.toUpperCase() as any, // Cast to any to avoid strict type issues if types mismatch slightly
-        paymentStatus: 'paid',
         status: 'paid', // Changed from 'completed' to 'paid' to match OrderStatus type
-        discount: discountValue > 0 ? {
-          type: discountType,
-          value: discountValue,
-          amount: discountAmount
-        } : undefined,
+        discountType: discountValue > 0 ? (discountType === 'percentage' ? 'PERCENT' : 'FIXED') : undefined,
+        discountValue: discountValue > 0 ? discountValue : undefined,
         finalAmount: finalAmount,
-        completedAt: new Date()
+        finalAmountAfterDiscount: finalAmount
       });
 
       toast.success('Payment processed successfully!');
       onSuccess();
     } catch (error: any) {
-      // Fix: Ensure error is handled correctly (TypeScript compatibility)
-      console.error('Payment failed:', error);
       if (error && typeof error === 'object' && 'message' in error) {
         toast.error((error as { message?: string }).message || 'Payment processing failed');
       } else if (typeof error === 'string') {
@@ -143,26 +137,24 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
         {/* Discount Section */}
         <div className="bg-gray-50 rounded-xl p-4 space-y-4">
           <h3 className="font-bold text-gray-800">Apply Discount</h3>
-          
+
           <div className="flex gap-2">
             <button
               onClick={() => setDiscountType('percentage')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold transition-all ${
-                discountType === 'percentage'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 border-2 border-gray-300'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold transition-all ${discountType === 'percentage'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-gray-700 border-2 border-gray-300'
+                }`}
             >
               <Percent className="w-4 h-4" />
               Percentage
             </button>
             <button
               onClick={() => setDiscountType('fixed')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold transition-all ${
-                discountType === 'fixed'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-white text-gray-700 border-2 border-gray-300'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold transition-all ${discountType === 'fixed'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-gray-700 border-2 border-gray-300'
+                }`}
             >
               <DollarSign className="w-4 h-4" />
               Fixed Amount
@@ -211,11 +203,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all whitespace-nowrap ${
-                activeTab === tab.key
-                  ? 'bg-white text-indigo-600 shadow-md'
-                  : 'text-gray-600 hover:text-gray-800'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all whitespace-nowrap ${activeTab === tab.key
+                ? 'bg-white text-indigo-600 shadow-md'
+                : 'text-gray-600 hover:text-gray-800'
+                }`}
             >
               {tab.icon}
               <span className="hidden sm:inline">{tab.label}</span>
@@ -293,11 +284,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
                 icon={<Smartphone className="w-5 h-5" />}
                 max={finalAmount}
               />
-              <div className={`rounded-lg p-4 ${
-                Math.abs((cashAmount + onlineAmount) - finalAmount) < 0.01
-                  ? 'bg-green-50 border border-green-200'
-                  : 'bg-red-50 border border-red-200'
-              }`}>
+              <div className={`rounded-lg p-4 ${Math.abs((cashAmount + onlineAmount) - finalAmount) < 0.01
+                ? 'bg-green-50 border border-green-200'
+                : 'bg-red-50 border border-red-200'
+                }`}>
                 <p className="text-sm font-semibold mb-1">Total Entered:</p>
                 <p className="text-xl font-bold">Rs. {(cashAmount + onlineAmount).toFixed(2)}</p>
                 <p className="text-sm text-gray-600 mt-1">
@@ -310,7 +300,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
           {activeTab === 'credit' && (
             <div className="space-y-4">
               <CreditSearch onSelectCustomer={setSelectedCustomer} />
-              
+
               {selectedCustomer && (
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border-2 border-indigo-200">
                   <h4 className="font-bold text-gray-800 mb-3">Transaction Summary</h4>
@@ -331,7 +321,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ order, onClose, onSu
                         Rs. {(selectedCustomer.totalCredit + finalAmount).toLocaleString()}
                       </span>
                     </div>
-{/* Available Credit Removed */}
+                    {/* Available Credit Removed */}
                   </div>
                 </div>
               )}

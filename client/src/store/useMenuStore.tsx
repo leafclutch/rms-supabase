@@ -128,8 +128,8 @@ export const useMenuStore = create<MenuStore>((set, get) => ({
       });
       toast.success("Menu item updated successfully!");
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update menu item");
-      console.error("Error updating menu item:", error);
     }
   },
 
@@ -154,6 +154,7 @@ export const useMenuStore = create<MenuStore>((set, get) => ({
         `Marked as ${updated.menuItem?.isAvailable ?? updated.isAvailable ? "available" : "unavailable"}`
       );
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update availability");
     }
   },
@@ -172,8 +173,8 @@ export const useMenuStore = create<MenuStore>((set, get) => ({
           : `${item.name} Unmarked as Special`
       );
     } catch (error) {
+      console.error(error);
       toast.error("Failed to update special status");
-      console.error("Error toggling special:", error);
     }
   },
 }));

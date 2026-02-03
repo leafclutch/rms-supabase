@@ -194,16 +194,14 @@ const CustomerMenuView: React.FC = () => {
               {/* All Category */}
               <button
                 onClick={() => setSelectedCategory("All")}
-                className={`flex flex-col items-center justify-center min-w-[80px] p-3 rounded-xl transition-all ${
-                  selectedCategory === "All"
-                    ? "bg-[#16516f]/10 border-2 border-[#16516f]"
-                    : "bg-gray-100 border-2 border-transparent hover:bg-gray-200"
-                }`}
+                className={`flex flex-col items-center justify-center min-w-[80px] p-3 rounded-xl transition-all ${selectedCategory === "All"
+                  ? "bg-[#16516f]/10 border-2 border-[#16516f]"
+                  : "bg-gray-100 border-2 border-transparent hover:bg-gray-200"
+                  }`}
               >
                 <div className="text-3xl mb-1">🍽️</div>
-                <span className={`text-sm font-medium whitespace-nowrap ${
-                  selectedCategory === "All" ? "text-[#16516f]" : "text-gray-700"
-                }`}>
+                <span className={`text-sm font-medium whitespace-nowrap ${selectedCategory === "All" ? "text-[#16516f]" : "text-gray-700"
+                  }`}>
                   All
                 </span>
               </button>
@@ -215,16 +213,14 @@ const CustomerMenuView: React.FC = () => {
                   <button
                     key={cat.categoryId}
                     onClick={() => setSelectedCategory(cat.categoryName)}
-                    className={`flex flex-col items-center justify-center min-w-[80px] p-3 rounded-xl transition-all ${
-                      selectedCategory === cat.categoryName
-                        ? "bg-[#16516f]/10 border-2 border-[#16516f]"
-                        : "bg-gray-100 border-2 border-transparent hover:bg-gray-200"
-                    }`}
+                    className={`flex flex-col items-center justify-center min-w-[80px] p-3 rounded-xl transition-all ${selectedCategory === cat.categoryName
+                      ? "bg-[#16516f]/10 border-2 border-[#16516f]"
+                      : "bg-gray-100 border-2 border-transparent hover:bg-gray-200"
+                      }`}
                   >
                     <div className="text-3xl mb-1">🍽️</div>
-                    <span className={`text-sm font-medium whitespace-nowrap ${
-                      selectedCategory === cat.categoryName ? "text-[#16516f]" : "text-gray-700"
-                    }`}>
+                    <span className={`text-sm font-medium whitespace-nowrap ${selectedCategory === cat.categoryName ? "text-[#16516f]" : "text-gray-700"
+                      }`}>
                       {cat.categoryName}
                     </span>
                   </button>

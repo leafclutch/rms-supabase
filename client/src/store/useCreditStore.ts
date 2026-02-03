@@ -48,9 +48,9 @@ export const useCreditStore = create<CreditStore>((set, get) => ({
         ledgerCount: c._count?.ledger || 0
       }));
       set({ customers, isLoading: false });
-    } catch (error: any) {
-      console.error('Failed to fetch customers:', error);
-      set({ error: 'Failed to load customers', isLoading: false });
+    } catch (error) {
+      console.error(error);
+      set({ error: 'Failed to fetch customers', isLoading: false });
     }
   },
 
@@ -114,7 +114,7 @@ export const useCreditStore = create<CreditStore>((set, get) => ({
       }));
 
     } catch (error: any) {
-      console.error('Failed to fetch customer details:', error);
+
       toast.error('Failed to load customer details');
       set({ isLoading: false });
     }
@@ -175,14 +175,14 @@ export const useCreditStore = create<CreditStore>((set, get) => ({
     try {
       // Call API to delete
       await import('../api/credit').then(api => api.deleteCustomer(id));
-      
+
       // Update local state
       set(state => ({
         customers: state.customers.filter(c => c.id !== id)
       }));
       toast.success('Customer deleted successfully');
     } catch (error: any) {
-      console.error('Failed to delete customer:', error);
+
       // Extract error message from backend
       const message = error.response?.data?.message || error.message || 'Failed to delete customer';
       toast.error(message);
@@ -237,7 +237,7 @@ export const useCreditStore = create<CreditStore>((set, get) => ({
 
       return transaction;
     } catch (error: any) {
-      console.error('Failed to add credit transaction:', error);
+
       toast.error('Failed to record debt');
       throw error;
     }
@@ -252,7 +252,7 @@ export const useCreditStore = create<CreditStore>((set, get) => ({
       // fetchCustomerDetails updates the customer in the list, so we are good.
       toast.success('Debt settled successfully');
     } catch (error: any) {
-      console.error('Failed to settle debt:', error);
+
       toast.error(error.message || 'Failed to settle debt');
       throw error;
     }

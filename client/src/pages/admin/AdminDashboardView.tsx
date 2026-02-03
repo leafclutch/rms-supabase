@@ -1,6 +1,6 @@
 
 
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   TrendingUp,
   Users,
@@ -14,12 +14,12 @@ import { useOrderStore } from "../../store/useOrderStore";
 
 const AdminDashboardView = () => {
   const navigate = useNavigate();
-  const { orders, fetchOrders, initializeSocket, historyOrders, fetchHistory } = useOrderStore();
+  const { orders, fetchOrders, initializeRealtime, historyOrders, fetchHistory } = useOrderStore();
 
   useEffect(() => {
     fetchOrders();
     fetchHistory();
-    const cleanup = initializeSocket();
+    const cleanup = initializeRealtime();
     return cleanup;
   }, []);
 
@@ -33,8 +33,8 @@ const AdminDashboardView = () => {
     const dateObj = new Date(order.createdAt || order.updatedAt || Date.now());
     const today = new Date();
     const isToday = dateObj.getDate() === today.getDate() &&
-                    dateObj.getMonth() === today.getMonth() &&
-                    dateObj.getFullYear() === today.getFullYear();
+      dateObj.getMonth() === today.getMonth() &&
+      dateObj.getFullYear() === today.getFullYear();
 
     if (!isToday) return acc;
 
@@ -44,7 +44,7 @@ const AdminDashboardView = () => {
 
     // Logic to handle anonymous credit as cash (matching AdminOrdersView)
     if (credit > 0 && !order.customerId) {
-        cash += credit;
+      cash += credit;
     }
 
     // Only add realized payments (Cash + Online)

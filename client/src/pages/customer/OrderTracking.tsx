@@ -25,7 +25,7 @@ export const OrderTracking: React.FC = () => {
 
   // Use 'dummyOrder' if nothing found for getOrderById, to avoid lint/type errors
   const [order, setOrder] = useState<any>(null);
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications] = useState<string[]>([]);
 
   useEffect(() => {
     if (orderId) {
@@ -35,7 +35,7 @@ export const OrderTracking: React.FC = () => {
       setOrder(dummyOrder);
     }
 
- 
+
   }, [orderId, getOrderById]);
 
   if (!order) {
@@ -104,8 +104,8 @@ export const OrderTracking: React.FC = () => {
                 <div key={step.status} className="flex items-start gap-4">
                   <div
                     className={`w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-300 ${step.active
-                        ? 'bg-indigo-600 border-indigo-600 shadow-lg'
-                        : 'bg-white border-gray-300'
+                      ? 'bg-indigo-600 border-indigo-600 shadow-lg'
+                      : 'bg-white border-gray-300'
                       }`}
                   >
                     <step.icon className={`w-6 h-6 ${step.active ? 'text-white' : 'text-gray-400'}`} />

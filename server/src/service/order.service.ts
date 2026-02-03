@@ -185,37 +185,9 @@ export const createOrUpdateOrderService = async (data: CreateOrderInput) => {
     try {
         await import('./inventory.service.js').then(s => s.deductStockForOrderService(order.id, items));
     } catch (err) {
-        console.error("Failed to deduct inventory:", err);
+
     }
 
-    // Emit socket event with fresh data
-    try {
-        const { getIO } = await import('../socket.ts');
-        const io = getIO();
-
-        // Fetch the updated order with items for the socket payload
-        const updatedOrder = await prisma.order.findUnique({
-            where: { id: order.id },
-            include: { items: true }
-        });
-
-        if (updatedOrder) {
-            const eventName = order.status === 'pending' && (!order.items || order.items.length === 0)
-                ? 'order:new'
-                : 'order:updated';
-
-            io.emit(eventName, {
-                orderId: updatedOrder.id,
-                tableCode: targetTableCode,
-                totalAmount: Number(updatedOrder.totalAmount),
-                items: updatedOrder.items,
-                status: updatedOrder.status,
-                addedItems: addedItemsForNotify // Send the changes
-            });
-        }
-    } catch (err) {
-        console.error("Socket emit failed:", err);
-    }
 
     // Re-fetch the full order with items and table details to return to the frontend
     const fullOrder = await prisma.order.findUnique({
@@ -287,7 +259,7 @@ export const cancelOrderService = async (orderId: string) => {
     try {
         await import('./inventory.service.js').then(s => s.restoreStockForOrderService(order.id, order.items));
     } catch (err) {
-        console.error("Failed to restore inventory:", err);
+
     }
 
     const cancelledOrder = await prisma.order.update({
@@ -296,12 +268,6 @@ export const cancelOrderService = async (orderId: string) => {
         include: { items: true }
     });
 
-    // Emit socket event
-    try {
-        const { getIO } = await import('../socket.ts');
-        const io = getIO();
-        io.emit('order:updated', { ...cancelledOrder, items: cancelledOrder.items });
-    } catch (err) { console.error("Socket emit failed:", err); }
 
     return { message: 'Order cancelled successfully', order: cancelledOrder };
 };
@@ -351,12 +317,6 @@ export const updateOrderItemQuantityService = async (orderId: string, menuItemId
         include: { items: { include: { menuItem: true } } }
     });
 
-    // Emit socket event
-    try {
-        const { getIO } = await import('../socket.ts');
-        const getIO_ = getIO();
-        getIO_.emit('order:updated', { ...updatedOrder, items: updatedOrder.items });
-    } catch (err) { console.error("Socket emit failed:", err); }
 
     return { message: 'Order updated', order: updatedOrder };
 };

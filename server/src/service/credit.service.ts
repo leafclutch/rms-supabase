@@ -51,7 +51,7 @@ export const getCreditAccountDetails = async (accountId: string) => {
 };
 
 export const recordDebtPayment = async (accountId: string, amount: number, description?: string) => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         const customer = await tx.customer.findUnique({ where: { id: accountId } });
         if (!customer) throw new AppError('Customer not found', 404);
 
@@ -114,12 +114,6 @@ export const recordDebtPayment = async (accountId: string, amount: number, descr
 
             remainingPayment -= deduct;
         }
-        try {
-            const { getIO } = await import('../socket.ts');
-            getIO().emit('order:paid', { customerId: accountId });
-        } catch (e) {
-            console.error("Socket emit failed in recordDebtPayment", e);
-        }
 
         return { transaction, updatedCustomer };
     });
@@ -127,7 +121,7 @@ export const recordDebtPayment = async (accountId: string, amount: number, descr
 
 export const listAllCreditAccounts = async () => {
     return await prisma.customer.findMany({
-        orderBy: { createdAt: 'desc' }, 
+        orderBy: { createdAt: 'desc' },
         include: {
             _count: {
                 select: { ledger: true }
@@ -163,7 +157,7 @@ export const deleteAccount = async (accountId: string) => {
         throw new AppError('Cannot delete a credit account with an outstanding balance. Please settle the debt first.', 400);
     }
 
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         // 1. Delete Credit Transactions (Ledger)
         await tx.creditTransaction.deleteMany({ where: { customerId: accountId } });
 
@@ -182,7 +176,7 @@ export const deleteAccount = async (accountId: string) => {
 };
 
 export const recordCreditCharge = async (accountId: string, amount: number, description?: string) => {
-    return await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx: any) => {
         const customer = await tx.customer.findUnique({ where: { id: accountId } });
         if (!customer) throw new AppError('Customer not found', 404);
 

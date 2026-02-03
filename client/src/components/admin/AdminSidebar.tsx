@@ -81,7 +81,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ sidebarOpen = false, setSid
             <User className="w-5 h-5" />
             <div className="flex-1">
               <p className="font-medium text-sm">Admin User</p>
-              <p className="text-xs text-slate-400">admin1@restaurant.com</p>
+              <p className="text-xs text-slate-400">admin@gmail.com</p>
             </div>
           </div>
           <button

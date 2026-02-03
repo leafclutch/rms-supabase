@@ -45,7 +45,7 @@ export const WalkInOrder: React.FC = () => {
   } = useMenuStore();
 
   const { items: cartItems, addItem, removeItem, updateQuantity, getTotalAmount, getTotalItems, clearCart } = useCartStore();
-  const { currentOrder, updateOrder, addOrder, fetchOrders, orders, initializeSocket } = useOrderStore();
+  const { currentOrder, updateOrder, addOrder, fetchOrders, orders, initializeRealtime } = useOrderStore();
 
   const [allItems, setAllItems] = useState<MenuItem[]>([]);
   const originalCustomerNameRef = useRef(currentOrder?.customerName || '');
@@ -66,10 +66,10 @@ export const WalkInOrder: React.FC = () => {
     });
     fetchOrders();
     fetchCreditCustomers();
-    const cleanup = initializeSocket();
+    const cleanup = initializeRealtime();
     return () => cleanup && cleanup();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchAll, fetchOrders, initializeSocket, fetchCreditCustomers]);
+  }, [fetchAll, fetchOrders, initializeRealtime, fetchCreditCustomers]);
 
   // Lookup customer by phone
   useEffect(() => {

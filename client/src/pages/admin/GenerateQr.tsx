@@ -52,8 +52,8 @@ const GenerateQr = () => {
       // Check for defaults after fetching
       await checkAndCreateDefaults(data.tables);
     } catch (error) {
-      console.error("Failed to fetch tables", error);
-      toast.error("Failed to load tables");
+
+
     } finally {
       setLoading(false);
     }
@@ -206,8 +206,8 @@ const GenerateQr = () => {
               setIsAdding(false);
             }}
             className={`px-6 py-3 font-medium text-sm transition-all relative whitespace-nowrap ${activeTab === tab
-                ? "text-[#16516f] font-bold"
-                : "text-gray-500 hover:text-gray-700"
+              ? "text-[#16516f] font-bold"
+              : "text-gray-500 hover:text-gray-700"
               }`}
           >
             {getTabDetails(tab).label}

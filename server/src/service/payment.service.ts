@@ -105,16 +105,6 @@ export const processCashPayment = async ({ orderId, discount, cashAmount }: Paym
         });
     });
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.CASH, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
-
-    // Socket Event
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.CASH, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
 
     return {
         message: 'Cash payment successful',
@@ -150,16 +140,6 @@ export const processOnlinePayment = async ({ orderId, discount }: PaymentPayload
         });
     });
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.ONLINE, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
-
-    // Socket Event
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.ONLINE, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
 
     return {
         message: 'Online payment successful',
@@ -203,16 +183,6 @@ export const processMixedPayment = async ({ orderId, discount, cashAmount, onlin
         });
     });
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.MIXED, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
-
-    // Socket Event
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.MIXED, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
 
     return {
         message: 'Mixed payment successful',
@@ -274,16 +244,6 @@ export const processCreditPayment = async ({ orderId, customerPhone, discount }:
     const newTotalDue = Number(customer.totalDue) + finalAmount;
     console.log(`[WhatsApp Mock] To: ${customerPhone} | Message: ₹${finalAmount} added to your credit. Total due: ₹${newTotalDue}`);
 
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.CREDIT, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
-
-    // Socket Event
-    try {
-        const { getIO } = await import('../socket.ts');
-        getIO().emit('order:paid', { orderId, method: PaymentMethod.CREDIT, amount: finalAmount });
-    } catch (e) { console.error("Socket error", e); }
 
     return {
         message: 'Credit payment successful',

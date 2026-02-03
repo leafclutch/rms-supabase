@@ -19,7 +19,7 @@ const AdminOrdersView = () => {
         setCurrentOrder,
         currentOrder,
         updateOrderStatus,
-        initializeSocket,
+        initializeRealtime,
         isLoading,
         error,
         isHistoryMode,
@@ -64,9 +64,9 @@ const AdminOrdersView = () => {
         fetchHistory().catch(console.error);
         if (!isHistoryMode) fetchOrders();
 
-        const cleanup = initializeSocket();
+        const cleanup = initializeRealtime();
         return () => cleanup && cleanup();
-    }, [fetchOrders, fetchHistory, initializeSocket, isHistoryMode, filterDate]); // Re-fetch on date change
+    }, [fetchOrders, fetchHistory, initializeRealtime, isHistoryMode, filterDate]); // Re-fetch on date change
 
     // Sales Summary Calculation
     const salesSummary = ordersForSummary.reduce((acc, order) => {
@@ -389,9 +389,9 @@ const AdminOrdersView = () => {
                 order={currentOrder}
                 onClose={() => setCurrentOrder(null)}
             />
-            <ManualOrderModal 
+            <ManualOrderModal
                 isOpen={isManualOrderModalOpen}
-                onClose={() => setIsManualOrderModalOpen(false)} 
+                onClose={() => setIsManualOrderModalOpen(false)}
             />
         </div>
     );
