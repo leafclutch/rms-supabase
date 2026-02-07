@@ -154,7 +154,9 @@ const CustomerMenuView: React.FC = () => {
                 <ArrowLeft className="w-6 h-6" />
               </button>
             )}
-            <div className="text-3xl lg:text-4xl">🍽️</div>
+            <div className="w-10 h-10 lg:w-12 lg:h-12 overflow-hidden rounded-full shadow-md border-2 border-[#16516f]/20">
+              <img src="/logo.png" alt="Aaradhya Restaurant Logo" className="w-full h-full object-cover" />
+            </div>
             <div>
               <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
                 Aaradhya Restaurant
@@ -190,7 +192,7 @@ const CustomerMenuView: React.FC = () => {
         {/* Category Filter - Directly below header */}
         <div className="bg-white border-b">
           <div className="max-w-7xl mx-auto px-4 lg:px-8 py-4">
-            <div className="flex gap-3 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+            <div className="flex items-start gap-3 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
               {/* All Category */}
               <button
                 onClick={() => setSelectedCategory("All")}
@@ -200,7 +202,7 @@ const CustomerMenuView: React.FC = () => {
                   }`}
               >
                 <div className="text-3xl mb-1">🍽️</div>
-                <span className={`text-sm font-medium whitespace-nowrap ${selectedCategory === "All" ? "text-[#16516f]" : "text-gray-700"
+                <span className={`text-sm font-medium text-center ${selectedCategory === "All" ? "text-[#16516f]" : "text-gray-700"
                   }`}>
                   All
                 </span>
@@ -219,7 +221,7 @@ const CustomerMenuView: React.FC = () => {
                       }`}
                   >
                     <div className="text-3xl mb-1">🍽️</div>
-                    <span className={`text-sm font-medium whitespace-nowrap ${selectedCategory === cat.categoryName ? "text-[#16516f]" : "text-gray-700"
+                    <span className={`text-sm font-medium text-center ${selectedCategory === cat.categoryName ? "text-[#16516f]" : "text-gray-700"
                       }`}>
                       {cat.categoryName}
                     </span>
