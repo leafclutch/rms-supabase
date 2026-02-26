@@ -1,6 +1,6 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import app from "./app.js";
-import { connectToDB } from "./config/prisma.ts";
+import { connectToDB } from "./config/prisma.js";
 import { createServer } from 'http';
 
 const PORT = process.env.PORT;

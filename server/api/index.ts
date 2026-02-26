@@ -1,7 +1,6 @@
-import app from "../src/app.ts";
-import { connectToDB } from "../src/config/prisma.ts";
+import app from "../src/app.js";
+import { connectToDB } from "../src/config/prisma.js";
 
-// Initialize DB connection (warm up)
 connectToDB();
 
 export default app;
